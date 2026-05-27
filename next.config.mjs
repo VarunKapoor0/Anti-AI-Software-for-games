@@ -12,6 +12,15 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/api/openapi.json",
+        destination: "/api/openapi",
+        permanent: false,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

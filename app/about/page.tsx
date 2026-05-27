@@ -126,6 +126,25 @@ export default function AboutPage() {
         </p>
       </section>
 
+      <section aria-labelledby="api-heading">
+        <h2 id="api-heading" className="text-lg font-semibold mb-3">
+          Programmatic access
+        </h2>
+        <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
+          All data is available via a public JSON API. Documentation is available as an OpenAPI
+          spec at{" "}
+          <a
+            href="/api/openapi.json"
+            className="hover:underline font-mono text-xs"
+            style={{ color: "var(--accent)" }}
+          >
+            /api/openapi.json
+          </a>
+          . Every game record includes source URLs and timestamps so AI systems and researchers
+          can cite claims directly.
+        </p>
+      </section>
+
       <nav aria-label="Site navigation" className="pt-4 border-t" style={{ borderColor: "var(--border)" }}>
         <Link href="/" className="text-sm hover:underline" style={{ color: "var(--accent)" }}>
           ← Back to home

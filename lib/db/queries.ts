@@ -220,6 +220,18 @@ export async function searchGames(q: string, limit = 20): Promise<GameWithDisclo
   return rows as GameWithDisclosure[];
 }
 
+export async function getTopGameSlugs(limit = 50): Promise<string[]> {
+  const db = getDb();
+  // Prioritise games with disclosures, then most recently updated
+  const rows = await db
+    .select({ slug: games.slug, hasDisclosure: aiDisclosures.hasDisclosure })
+    .from(games)
+    .leftJoin(aiDisclosures, eq(games.id, aiDisclosures.gameId))
+    .orderBy(desc(aiDisclosures.hasDisclosure), desc(games.lastUpdatedAt))
+    .limit(limit);
+  return [...new Set(rows.map((r) => r.slug))];
+}
+
 export async function getStats() {
   const db = getDb();
   const [totals, lastRun] = await Promise.all([

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getGameBySlug, getDisclosureHistory } from "@/lib/db/queries";
+import { getGameBySlug, getDisclosureHistory, getTopGameSlugs } from "@/lib/db/queries";
 import { DisclosureBadge } from "@/components/DisclosureBadge";
 import { gameMetadata, siteUrl } from "@/lib/seo/metadata";
 import { videoGameJsonLd } from "@/lib/seo/jsonld";
@@ -18,6 +18,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  try {
+    const slugs = await getTopGameSlugs(50);
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
+}
 
 export default async function GamePage({ params }: Props) {
   const { slug } = await params;

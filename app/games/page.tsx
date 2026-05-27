@@ -10,32 +10,33 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-type SearchParams = {
+type SearchParams = Promise<{
   page?: string;
   sort?: string;
   has_disclosure?: string;
   has_pre_generated?: string;
   has_live_generated?: string;
-};
+}>;
 
 export default async function BrowsePage({ searchParams }: { searchParams: SearchParams }) {
-  const page = Math.max(1, parseInt(searchParams.page ?? "1", 10));
+  const sp = await searchParams;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10));
   const limit = 50;
   const offset = (page - 1) * limit;
-  const sort = (searchParams.sort ?? "updated") as "name" | "updated" | "release_date";
+  const sort = (sp.sort ?? "updated") as "name" | "updated" | "release_date";
 
   const opts = {
     limit,
     offset,
     sort,
-    ...(searchParams.has_disclosure !== undefined
-      ? { hasDisclosure: searchParams.has_disclosure === "true" }
+    ...(sp.has_disclosure !== undefined
+      ? { hasDisclosure: sp.has_disclosure === "true" }
       : {}),
-    ...(searchParams.has_pre_generated !== undefined
-      ? { hasPreGenerated: searchParams.has_pre_generated === "true" }
+    ...(sp.has_pre_generated !== undefined
+      ? { hasPreGenerated: sp.has_pre_generated === "true" }
       : {}),
-    ...(searchParams.has_live_generated !== undefined
-      ? { hasLiveGenerated: searchParams.has_live_generated === "true" }
+    ...(sp.has_live_generated !== undefined
+      ? { hasLiveGenerated: sp.has_live_generated === "true" }
       : {}),
   };
 
@@ -45,13 +46,9 @@ export default async function BrowsePage({ searchParams }: { searchParams: Searc
   function buildUrl(overrides: Record<string, string>) {
     const params = new URLSearchParams({
       ...(sort !== "updated" ? { sort } : {}),
-      ...(searchParams.has_disclosure ? { has_disclosure: searchParams.has_disclosure } : {}),
-      ...(searchParams.has_pre_generated
-        ? { has_pre_generated: searchParams.has_pre_generated }
-        : {}),
-      ...(searchParams.has_live_generated
-        ? { has_live_generated: searchParams.has_live_generated }
-        : {}),
+      ...(sp.has_disclosure ? { has_disclosure: sp.has_disclosure } : {}),
+      ...(sp.has_pre_generated ? { has_pre_generated: sp.has_pre_generated } : {}),
+      ...(sp.has_live_generated ? { has_live_generated: sp.has_live_generated } : {}),
       ...overrides,
     });
     return `/games?${params.toString()}`;
@@ -75,22 +72,22 @@ export default async function BrowsePage({ searchParams }: { searchParams: Searc
         <FilterLink
           label="All games"
           href="/games"
-          active={!searchParams.has_disclosure && !searchParams.has_pre_generated && !searchParams.has_live_generated}
+          active={!sp.has_disclosure && !sp.has_pre_generated && !sp.has_live_generated}
         />
         <FilterLink
           label="Has any disclosure"
           href={buildUrl({ has_disclosure: "true", page: "1" })}
-          active={searchParams.has_disclosure === "true"}
+          active={sp.has_disclosure === "true"}
         />
         <FilterLink
           label="Pre-generated AI"
           href={buildUrl({ has_pre_generated: "true", page: "1" })}
-          active={searchParams.has_pre_generated === "true"}
+          active={sp.has_pre_generated === "true"}
         />
         <FilterLink
           label="Live-generated AI"
           href={buildUrl({ has_live_generated: "true", page: "1" })}
-          active={searchParams.has_live_generated === "true"}
+          active={sp.has_live_generated === "true"}
         />
         <span className="ml-auto flex items-center gap-2 text-sm" style={{ color: "var(--muted)" }}>
           Sort:

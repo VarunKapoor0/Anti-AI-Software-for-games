@@ -4,10 +4,11 @@ import { SearchBar } from "@/components/SearchBar";
 import { DisclosureBadge } from "@/components/DisclosureBadge";
 import { searchGames } from "@/lib/db/queries";
 
-type Props = { searchParams: { q?: string } };
+type Props = { searchParams: Promise<{ q?: string }> };
 
-export function generateMetadata({ searchParams }: Props): Metadata {
-  const q = searchParams.q?.trim() ?? "";
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { q: qRaw } = await searchParams;
+  const q = qRaw?.trim() ?? "";
   return {
     title: q ? `Search: "${q}"` : "Search Games",
     description: q
@@ -17,7 +18,8 @@ export function generateMetadata({ searchParams }: Props): Metadata {
 }
 
 export default async function SearchPage({ searchParams }: Props) {
-  const q = searchParams.q?.trim() ?? "";
+  const { q: qRaw } = await searchParams;
+  const q = qRaw?.trim() ?? "";
   const results = q ? await searchGames(q).catch(() => []) : [];
 
   return (

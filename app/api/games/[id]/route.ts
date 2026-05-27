@@ -6,17 +6,18 @@ export const runtime = "nodejs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const limited = await applyRateLimit(req);
   if (limited) return limited;
 
+  const { id } = await params;
   try {
-    const game = await getGameById(params.id);
+    const game = await getGameById(id);
     if (!game) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    const history = await getDisclosureHistory(game.id);
+    const history = await getDisclosureHistory(id);
     return NextResponse.json({ game, history }, { headers: corsHeaders() });
   } catch (err) {
     console.error("GET /api/games/:id error:", err);

@@ -7,10 +7,11 @@ import { DisclosureBadge } from "@/components/DisclosureBadge";
 import { gameMetadata, siteUrl } from "@/lib/seo/metadata";
 import { videoGameJsonLd } from "@/lib/seo/jsonld";
 
-type Props = { params: { slug: string } };
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const game = await getGameBySlug(params.slug);
+  const { slug } = await params;
+  const game = await getGameBySlug(slug);
   if (!game) return { title: "Game not found" };
   const canonicalUrl = `${siteUrl}/games/${game.slug}`;
   return gameMetadata(game, canonicalUrl);
@@ -19,7 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export const revalidate = 3600;
 
 export default async function GamePage({ params }: Props) {
-  const game = await getGameBySlug(params.slug);
+  const { slug } = await params;
+  const game = await getGameBySlug(slug);
   if (!game) notFound();
 
   const history = await getDisclosureHistory(game.id);

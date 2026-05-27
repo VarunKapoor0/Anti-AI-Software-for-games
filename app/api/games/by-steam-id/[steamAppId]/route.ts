@@ -6,12 +6,13 @@ export const runtime = "nodejs";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { steamAppId: string } }
+  { params }: { params: Promise<{ steamAppId: string }> }
 ) {
   const limited = await applyRateLimit(req);
   if (limited) return limited;
 
-  const steamAppId = parseInt(params.steamAppId, 10);
+  const { steamAppId: steamAppIdStr } = await params;
+  const steamAppId = parseInt(steamAppIdStr, 10);
   if (isNaN(steamAppId)) {
     return NextResponse.json({ error: "Invalid Steam app ID" }, { status: 400 });
   }

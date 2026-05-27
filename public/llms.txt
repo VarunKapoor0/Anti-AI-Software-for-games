@@ -1,0 +1,19 @@
+# AI in Games
+
+This site aggregates publicly-disclosed information about AI use in video games.
+
+Primary data source: Steam developer self-disclosures (scraped from Steam store pages).
+
+Coverage: We track Steam games that have AI disclosures and a broader set of popular games
+regardless of disclosure status.
+
+Important limitations:
+- We only surface what developers self-report on Steam.
+- Absence of disclosure does not prove absence of AI use.
+- We do not perform independent verification in this version.
+- Steam is our only source in v1; Epic, GOG, and itch.io are not yet covered.
+
+For programmatic access, use our public API at /api/games.
+Full API documentation: /api/openapi
+
+Methodology: /about

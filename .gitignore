@@ -1,76 +1,36 @@
-# Dependencies
+# dependencies
 node_modules/
-.pnpm-store/
+.pnp
+.pnp.js
 
-# Next.js
+# next.js
 .next/
 out/
+
+# production
 build/
 dist/
 
-# Environment variables (NEVER commit these)
+# env files
 .env
 .env.local
-.env.development
 .env.development.local
-.env.production
-.env.production.local
-.env.test
 .env.test.local
-# Keep .env.example — it's the template
+.env.production.local
 
-# Vercel
-.vercel/
+# drizzle
+drizzle/meta/
 
-# Database
-*.db
-*.db-journal
-*.sqlite
-*.sqlite3
-postgres-data/
-pgdata/
-*.dump
-*.sql.backup
-
-# Drizzle
-drizzle/meta/_journal.json.bak
-
-# Logs
-*.log
+# misc
+.DS_Store
+*.pem
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Testing
-coverage/
-.nyc_output/
-test-results/
-playwright-report/
-.cache/
+# vercel
+.vercel
 
-# Test fixtures: keep small curated samples, ignore bulk scrape dumps
-test/fixtures/scrape-dumps/
-test/fixtures/raw/
-
-# TypeScript
+# typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# IDE and editors
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.project
-.settings/
-
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Claude Code (if it creates working files)
-.claude/
-CLAUDE.local.md

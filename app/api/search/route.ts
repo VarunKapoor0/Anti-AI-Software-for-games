@@ -5,12 +5,12 @@ import { searchGames } from "@/lib/db/queries";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  const limited = await applyRateLimit(req);
-  if (limited) return limited;
+  const rl = await applyRateLimit(req);
+  if (rl.blocked) return rl.blocked;
 
   const q = req.nextUrl.searchParams.get("q")?.trim() ?? "";
   if (!q) {
-    return NextResponse.json({ results: [] }, { headers: corsHeaders() });
+    return NextResponse.json({ results: [] }, { headers: { ...corsHeaders(), ...rl.headers } });
   }
   if (q.length > 200) {
     return NextResponse.json({ error: "Query too long" }, { status: 400 });
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const results = await searchGames(q);
-    return NextResponse.json({ results }, { headers: corsHeaders() });
+    return NextResponse.json({ results }, { headers: { ...corsHeaders(), ...rl.headers } });
   } catch (err) {
     console.error("GET /api/search error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

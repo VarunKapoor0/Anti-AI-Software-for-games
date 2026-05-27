@@ -5,8 +5,8 @@ import { listGames } from "@/lib/db/queries";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  const limited = await applyRateLimit(req);
-  if (limited) return limited;
+  const rl = await applyRateLimit(req);
+  if (rl.blocked) return rl.blocked;
 
   const { searchParams } = req.nextUrl;
   const limit = Math.min(parseInt(searchParams.get("limit") ?? "50", 10), 100);
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   try {
     const result = await listGames(opts);
     return NextResponse.json(result, {
-      headers: corsHeaders(),
+      headers: { ...corsHeaders(), ...rl.headers },
     });
   } catch (err) {
     console.error("GET /api/games error:", err);

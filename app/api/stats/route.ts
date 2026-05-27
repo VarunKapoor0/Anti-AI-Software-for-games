@@ -5,14 +5,15 @@ import { getStats } from "@/lib/db/queries";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  const limited = await applyRateLimit(req);
-  if (limited) return limited;
+  const rl = await applyRateLimit(req);
+  if (rl.blocked) return rl.blocked;
 
   try {
     const stats = await getStats();
     return NextResponse.json(stats, {
       headers: {
         ...corsHeaders(),
+        ...rl.headers,
         "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
       },
     });

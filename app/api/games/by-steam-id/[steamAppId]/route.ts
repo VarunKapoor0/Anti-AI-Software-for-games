@@ -8,8 +8,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ steamAppId: string }> }
 ) {
-  const limited = await applyRateLimit(req);
-  if (limited) return limited;
+  const rl = await applyRateLimit(req);
+  if (rl.blocked) return rl.blocked;
 
   const { steamAppId: steamAppIdStr } = await params;
   const steamAppId = parseInt(steamAppIdStr, 10);
@@ -23,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
     const history = await getDisclosureHistory(game.id);
-    return NextResponse.json({ game, history }, { headers: corsHeaders() });
+    return NextResponse.json({ game, history }, { headers: { ...corsHeaders(), ...rl.headers } });
   } catch (err) {
     console.error("GET /api/games/by-steam-id error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

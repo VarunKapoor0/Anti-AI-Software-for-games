@@ -8,8 +8,8 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const limited = await applyRateLimit(req);
-  if (limited) return limited;
+  const rl = await applyRateLimit(req);
+  if (rl.blocked) return rl.blocked;
 
   const { id } = await params;
   try {
@@ -18,7 +18,7 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
     const history = await getDisclosureHistory(id);
-    return NextResponse.json({ game, history }, { headers: corsHeaders() });
+    return NextResponse.json({ game, history }, { headers: { ...corsHeaders(), ...rl.headers } });
   } catch (err) {
     console.error("GET /api/games/:id error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
